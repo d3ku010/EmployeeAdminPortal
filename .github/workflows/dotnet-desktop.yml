@@ -35,8 +35,7 @@ jobs:
 
     # Restore the solution
     - name: Restore the application
-      run: dotnet restore ${{ env.Solution_Name }} --configuration ${{ matrix.configuration }}
-
+      run: dotnet restore ${{ env.Solution_Name }}
     # Build the solution
     - name: Build the application
       run: dotnet build ${{ env.Solution_Name }} --configuration ${{ matrix.configuration }}
