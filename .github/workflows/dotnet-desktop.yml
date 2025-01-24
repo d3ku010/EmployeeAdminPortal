@@ -1,0 +1,73 @@
+name: EmployeeAdminPortal CI/CD
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: EmployeeAdminPortal.sln                  # Replace with the actual solution name
+      Test_Project_Path: Tests/EmployeeAdminPortal.Tests.csproj  # Update with the relative path to your test project
+      Wap_Project_Directory: EmployeeAdminPortal.Package         # Replace with your WAP project directory name
+      Wap_Project_Path: EmployeeAdminPortal.Package/EmployeeAdminPortal.Package.wapproj
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # Install the .NET 8.0 SDK
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    # Setup MSBuild for building the project
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v2
+
+    # Run unit tests
+    - name: Execute unit tests
+      run: dotnet test ${{ env.Test_Project_Path }} --configuration ${{ matrix.configuration }}
+
+    # Restore the solution
+    - name: Restore the application
+      run: msbuild ${{ env.Solution_Name }} /t:Restore /p:Configuration=${{ matrix.configuration }}
+
+    # Decode the base64 encoded PFX
+    - name: Decode the PFX certificate
+      run: |
+        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
+        $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
+        [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+
+    # Build and create the app package
+    - name: Create the app package
+      run: msbuild ${{ env.Wap_Project_Path }} /p:Configuration=${{ matrix.configuration }} /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
+      env:
+        Appx_Bundle: Always
+        Appx_Bundle_Platforms: x86|x64
+        Appx_Package_Build_Mode: StoreUpload
+        Configuration: ${{ matrix.configuration }}
+
+    # Remove the PFX after signing
+    - name: Remove the PFX
+      run: Remove-Item -path $env:Wap_Project_Directory\GitHubActionsWorkflow.pfx
+
+    # Upload the build artifacts
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: MSIX Package
+        path: ${{ env.Wap_Project_Directory }}\AppPackages
