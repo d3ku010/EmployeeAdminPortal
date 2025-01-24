@@ -37,9 +37,9 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v2
 
-    # Run unit tests
     - name: Execute unit tests
-      run: dotnet test ${{ env.Test_Project_Path }} --configuration ${{ matrix.configuration }}
+      run: dotnet test Tests/EmployeeAdminPortal.Tests/EmployeeAdminPortal.Tests.csproj --configuration Release
+
 
     # Restore the solution
     - name: Restore the application
