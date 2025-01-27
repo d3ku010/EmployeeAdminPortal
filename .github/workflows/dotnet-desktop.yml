@@ -17,7 +17,7 @@ jobs:
 
     env:
       Solution_Name: EmployeeAdminPortal.sln                  # Replace with the actual solution name
-      Test_Project_Path: Tests/EmployeeAdminPortal/EmployeeAdminPortal.Tests.csproj  # Update with the relative path to your test project
+      Test_Project_Path: EmployeeAdminPortal/Tests/EmployeeAdminPortal/EmployeeAdminPortal.Tests.csproj  # Update with the relative path to your test project
       Wap_Project_Directory: EmployeeAdminPortal.Package         # Replace with your WAP project directory name
       Wap_Project_Path: EmployeeAdminPortal.Package/EmployeeAdminPortal.Package.wapproj
 
