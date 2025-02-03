@@ -1,9 +1,14 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using EmployeeAdminPortal.Data;
+using EmployeeAdminPortal.Logs;
 using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Web;
 
 var logger = LogManager.Setup().LoadConfigurationFromFile("NLog.config").GetCurrentClassLogger();
+logger.Info("Starting application...");
 
 try
 {
@@ -13,8 +18,8 @@ try
 
     // Add NLog to the pipeline
     builder.Logging.ClearProviders(); // Remove default logging providers
-    builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-    builder.Host.UseNLog();
+
+    builder.Services.AddSingleton<ILoggingService,LoggingService>();
 
     // Add services to the container
     builder.Services.AddControllers();
