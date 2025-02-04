@@ -1,13 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeAdminPortal", "EmployeeAdminPortal\EmployeeAdminPortal.csproj", "{DF2FDE44-4A11-451A-A43F-31E750E78BDB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EmployeeAdminPortal", "EmployeeAdminPortal", "{D20991DB-9E25-49F4-8193-A835155878D7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DDE2DE9C-F388-4234-9FE7-B0595AAA3A37}"
+	ProjectSection(SolutionItems) = preProject
+		EmployeeAdminPortal\Tests\EmployeeAdminPortalTests.cs = EmployeeAdminPortal\Tests\EmployeeAdminPortalTests.cs
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeAdminPortal.Tests", "EmployeeAdminPortal\Tests\EmployeeAdminPortal.Tests\EmployeeAdminPortal.Tests.csproj", "{35E0C845-BECD-41DB-968D-AEDB8CD44EB8}"
 EndProject
