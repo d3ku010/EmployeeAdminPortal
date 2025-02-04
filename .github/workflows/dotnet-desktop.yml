@@ -33,14 +33,22 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-   # Restore the solution
+    # Verify .NET SDK version
+    - name: Verify .NET SDK version
+      run: dotnet --version
+
+    # Restore the solution
     - name: Restore the application
       run: dotnet restore ${{ env.Solution_Name }}
 
-    # Build the solution
-    - name: Build the application
-      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ matrix.configuration }}
+    # Clean the solution to remove old build artifacts
+    - name: Clean the solution
+      run: dotnet clean ${{ env.Solution_Name }} --configuration ${{ matrix.configuration }}
 
+    # Build the solution with diagnostic verbosity
+    - name: Build the application
+      run: dotnet build ${{ env.Solution_Name }} --configuration ${{ matrix.configuration }} -v diag
+      timeout-minutes: 20
 
     # Execute unit tests
     - name: Execute unit tests
