@@ -53,7 +53,7 @@ jobs:
     # Execute unit tests
     - name: Execute unit tests
       run: cd EmployeeAdminPortal/Tests/EmployeeAdminPortal
-dotnet test ${{ env.Test_Project_Path }} --configuration ${{ matrix.configuration }} --logger "trx;LogFileName=test_results.trx"
+        dotnet test ${{ env.Test_Project_Path }} --configuration ${{ matrix.configuration }} --logger "trx;LogFileName=test_results.trx"
     
     # Decode the base64 encoded PFX
     - name: Decode the PFX certificate
