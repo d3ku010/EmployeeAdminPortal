@@ -22,32 +22,75 @@ jobs:
       Wap_Project_Path: EmployeeAdminPortal.Package/EmployeeAdminPortal.Package.wapproj
 
     steps:
-    - name: Checkout Repository
+    
+    # 📥 Checkout the repository
+    - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
+    # 🏗️ Install .NET 8.0 SDK
     - name: Install .NET SDK
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
+    # ✅ Verify .NET SDK version
     - name: Verify .NET SDK version
       run: dotnet --version
 
-    - name: Debug: List all files and directories
-      run: Get-ChildItem -Recurse
-
+    # 🔄 Restore the solution dependencies
     - name: Restore the application
       run: dotnet restore ${{ env.Solution_Name }}
 
+    # 🧹 Clean the solution to remove old build artifacts
     - name: Clean the solution
       run: dotnet clean ${{ env.Solution_Name }} --configuration ${{ matrix.configuration }}
 
+    # 🏗️ Build the solution with diagnostic verbosity
     - name: Build the application
       run: dotnet build ${{ env.Solution_Name }} --configuration ${{ matrix.configuration }} -v diag
       timeout-minutes: 20
 
+    # 🐞 Debug: List all files (to verify paths)
+    - name: Debug: List all files
+      run: Get-ChildItem -Recurse
+
+    # 🧪 Execute unit tests
     - name: Execute unit tests
       run: |
-        dotnet test ${{ github.workspace }}/${{ env.Test_Project_Path }} --configuration ${{ matrix.configuration }} --logger "trx;LogFileName=test_results.trx"
+        dotnet test ${{ env.Test_Project_Path }} --configuration ${{ matrix.configuration }} --logger "trx;LogFileName=test_results.trx"
+
+    # 🔐 Decode the base64 encoded PFX certificate
+    - name: Decode the PFX certificate
+      run: |
+        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.Base64_Encoded_Pfx }}")
+        $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath GitHubActionsWorkflow.pfx
+        [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+
+    # 📦 Build and create the app package
+    - name: Create the app package
+      run: msbuild ${{ env.Wap_Project_Path }} /p:Configuration=${{ matrix.configuration }} /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:PackageCertificatePassword=${{ secrets.Pfx_Key }}
+      env:
+        Appx_Bundle: Always
+        Appx_Bundle_Platforms: x86|x64
+        Appx_Package_Build_Mode: StoreUpload
+        Configuration: ${{ matrix.configuration }}
+
+    # 🗑️ Remove the PFX after signing
+    - name: Remove the PFX
+      run: Remove-Item -path $env:Wap_Project_Directory\GitHubActionsWorkflow.pfx
+
+    # 📤 Upload the build artifacts
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: MSIX Package
+        path: ${{ env.Wap_Project_Directory }}\AppPackages
+
+    # 📄 Publish test results as an artifact (optional, useful for review)
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: test_results.trx
