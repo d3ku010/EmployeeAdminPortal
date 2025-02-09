@@ -24,7 +24,7 @@ namespace EmployeeAdminPortal.Controllers
         [HttpGet]
         public IActionResult GetAllEmployees()
         {
-            _logger.LogInfo("Fetching all employees from the database.");
+            _logger.LogInfo("Fetching all employees details from the database.");
             var employees = dbContext.Employees.ToList();
             return Ok(employees);
         }
@@ -48,7 +48,7 @@ namespace EmployeeAdminPortal.Controllers
         [HttpPost]
         public IActionResult AddEmployee(AddEmployeeDto addEmployeeDto)
         {
-            _logger.LogInfo("Adding a new employee.");
+            _logger.LogInfo("Adding a new employee to the DataBase.");
 
             var employeeEntity = new Employee
             {

@@ -7,7 +7,6 @@
 		<InvariantGlobalization>false</InvariantGlobalization>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-
 		<!-- Ensures no duplicate attributes -->
 	</PropertyGroup>
 
